@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static  %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Document</title>
+</head>
+
+<body>
+    <header
+        style="display: flex;align-items: center;justify-content: space-between;border-bottom: 4px solid black;margin-bottom: 80px;">
+        <h1 style="margin: 0;">CodingDojo Wall</h1>
+
+        <p style="margin: 0;font-size: 25px;">Welcome {{current_user.first_name}}{{current_user.last_name}} </p>
+        <a style="font-size: 25px;" href="/log_out">log off</a>
+
+    </header>
+    <form action="/post/message" method="post">
+        {% csrf_token %}
+        <label style="margin-left: 80px;font-size: 20px;font-weight: 600;" for="">Post a message</label><br>
+        <textarea style="margin-left: 80px;margin-top: 20px;" name="message_content" id="content_id" cols="150"
+            rows="10"></textarea><br>
+
+        <button
+            style="margin-left: 1002px;box-shadow: 2px 2px black;background-color:#2b78e4 ;color: white;padding: 9px;width: 200px;"
+            type="submit">Post a
+            message</button>
+    </form>
+    {% for message in all_messages %}
+    <div style="display: flex;align-items: center;">
+        <p>{{message.user.first_name}} {{message.user.last_name}} - {{message.created_at}} :</p>
+
+        <form action="/delete/message/{{message.id}}/{{message.user.id}}" method="post">
+            {% csrf_token %}
+            <button
+                style="box-shadow: 1.5px 1.5px black;background-color:rgb(151, 0, 0) ;color: white;padding: 6px;margin-left: 10px;border: none;"
+                type="submit">Delete</button>
+        </form>
+    </div>
+    <p style="display: inline-block; margin-top: 0;margin-bottom: 20px;">{{message.message}}</p>
+    <div>
+        {%for comment in message.comments.all %}
+        <div>
+            <p>{{comment.user.first_name}} {{comment.user.last_name}} - {{comment.created_at}} :</p>
+            <p>{{comment.comment}}</p>
+        </div>
+
+        {%endfor%}
+        <form action="/post/comment" method="post">
+            {% csrf_token %}
+            <label style="margin-left: 80px;font-size: 20px;font-weight: 600;" for="">Post a comment</label><br>
+            <textarea style="margin-left: 80px;margin-top: 20px;" name="content" id="comment" cols="150"
+                rows="10"></textarea><br>
+            <input type="hidden" name="messageid" value="{{message.id}}">
+            <button
+                style="background-color:#009e0f ;box-shadow: 2px 2px black;color: white;margin-left: 1002px;padding: 9px;width: 200px;"
+                type="submit">Post
+                a comment</button>
+        </form>
+    </div>
+    {%endfor%}
+
+</body>
+
+</html>
